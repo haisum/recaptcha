@@ -1,4 +1,4 @@
-package recaptcha_test
+package recaptcha
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func ExampleRecaptcha_Verify() {
+func ExampleR_Verify() {
 	sitekey := "{Your site key here}"
 	re := recaptcha.R{
 		Secret: "{Your secret here}",
