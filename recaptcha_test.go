@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func ExampleRecaptchaVerify() {
+func ExampleRecaptcha_Verify() {
 	sitekey := "{Your site key here}"
 	re := recaptcha.R{
 		Secret: "{Your secret here}",

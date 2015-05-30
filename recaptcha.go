@@ -14,7 +14,6 @@
 // Available on github: http://github.com/haisum/recaptcha
 //
 // Author: Haisum (haisumbhatti@gmail.com)
-
 package recaptcha
 
 import (
@@ -26,7 +25,6 @@ import (
 
 // recaptcha.R type represents an object of Recaptcha and has public property Secret,
 // which is secret obtained from google recaptcha tool admin interface
-//
 type R struct {
 	Secret    string
 	lastError []string
