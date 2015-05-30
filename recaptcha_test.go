@@ -5,7 +5,6 @@ import (
 	"github.com/haisum/recaptcha"
 	"log"
 	"net/http"
-	"testing"
 )
 
 func ExampleRecaptchaVerify() {
