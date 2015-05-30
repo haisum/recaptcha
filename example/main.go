@@ -1,14 +1,13 @@
-package recaptcha_test
+package main
 
 import (
 	"fmt"
 	"github.com/haisum/recaptcha"
 	"log"
 	"net/http"
-	"testing"
 )
 
-func ExampleRecaptchaVerify() {
+func main() {
 	sitekey := "{Your site key here}"
 	re := recaptcha.R{
 		Secret: "{Your secret here}",
@@ -40,9 +39,11 @@ func ExampleRecaptchaVerify() {
 		}
 	})
 
+	log.Printf("\n Starting server on http://localhost:8100 . Check example by opening this url in browser.\n", ...)
+
 	err := http.ListenAndServe(":8100", nil)
 
 	if err != nil {
-		log.Printf("Could not start server. %s", err)
+		log.Fatalf("Could not start server. %s", err)
 	}
 }
