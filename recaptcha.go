@@ -45,9 +45,8 @@ var postUrl string = "https://www.google.com/recaptcha/api/siteverify"
 func (r *R) Verify(req http.Request) bool {
 	r.lastError = make([]string, 1)
 	response := req.PostFormValue("g-recaptcha-response")
-	ip := req.RemoteAddr
 	resp, err := http.PostForm(postUrl,
-		url.Values{"secret": {r.Secret}, "remoteip": {ip}, "response": {response}})
+		url.Values{"secret": {r.Secret}, "response": {response}})
 	if err != nil {
 		r.lastError = append(r.lastError, err.Error())
 		return false
