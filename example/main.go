@@ -39,7 +39,7 @@ func main() {
 		}
 	})
 
-	log.Printf("\n Starting server on http://localhost:8100 . Check example by opening this url in browser.\n", ...)
+	log.Printf("\n Starting server on http://localhost:8100 . Check example by opening this url in browser.\n")
 
 	err := http.ListenAndServe(":8100", nil)
 
