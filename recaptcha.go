@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // recaptcha.R type represents an object of Recaptcha and has public property Secret,
@@ -45,7 +46,8 @@ var postUrl string = "https://www.google.com/recaptcha/api/siteverify"
 func (r *R) Verify(req http.Request) bool {
 	r.lastError = make([]string, 1)
 	response := req.PostFormValue("g-recaptcha-response")
-	resp, err := http.PostForm(postUrl,
+	client := &http.Client{Timeout: 20 * time.Second}
+	resp, err := client.PostForm(postUrl,
 		url.Values{"secret": {r.Secret}, "response": {response}})
 	if err != nil {
 		r.lastError = append(r.lastError, err.Error())
