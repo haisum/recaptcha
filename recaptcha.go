@@ -1,4 +1,4 @@
-// Package github.com/haisum/recaptcha is google golang module for google re-captcha.
+// Package recaptcha is google golang module for google re-captcha.
 //
 // Installation
 //
@@ -24,7 +24,7 @@ import (
 	"time"
 )
 
-// recaptcha.R type represents an object of Recaptcha and has public property Secret,
+// R type represents an object of Recaptcha and has public property Secret,
 // which is secret obtained from google recaptcha tool admin interface
 type R struct {
 	Secret    string
@@ -38,7 +38,7 @@ type googleResponse struct {
 }
 
 // url to post submitted re-captcha response to
-var postUrl string = "https://www.google.com/recaptcha/api/siteverify"
+var postURL = "https://www.google.com/recaptcha/api/siteverify"
 
 // Verify method, verifies if current request have valid re-captcha response and returns true or false
 // This method also records any errors in validation.
@@ -47,7 +47,7 @@ func (r *R) Verify(req http.Request) bool {
 	r.lastError = make([]string, 1)
 	response := req.FormValue("g-recaptcha-response")
 	client := &http.Client{Timeout: 20 * time.Second}
-	resp, err := client.PostForm(postUrl,
+	resp, err := client.PostForm(postURL,
 		url.Values{"secret": {r.Secret}, "response": {response}})
 	if err != nil {
 		r.lastError = append(r.lastError, err.Error())
@@ -58,21 +58,20 @@ func (r *R) Verify(req http.Request) bool {
 	if err != nil {
 		r.lastError = append(r.lastError, err.Error())
 		return false
-	} else {
-		gr := new(googleResponse)
-		err := json.Unmarshal(body, gr)
-		if err != nil {
-			r.lastError = append(r.lastError, err.Error())
-			return false
-		}
-		if !gr.Success {
-			r.lastError = append(r.lastError, gr.ErrorCodes...)
-		}
-		return gr.Success
 	}
+	gr := new(googleResponse)
+	err = json.Unmarshal(body, gr)
+	if err != nil {
+		r.lastError = append(r.lastError, err.Error())
+		return false
+	}
+	if !gr.Success {
+		r.lastError = append(r.lastError, gr.ErrorCodes...)
+	}
+	return gr.Success
 }
 
-// Returns errors occurred in last re-captcha validation attempt
+// LastError returns errors occurred in last re-captcha validation attempt
 func (r R) LastError() []string {
 	return r.lastError
 }
