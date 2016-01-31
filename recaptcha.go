@@ -45,7 +45,7 @@ var postUrl string = "https://www.google.com/recaptcha/api/siteverify"
 // These errors can be received by calling LastError() method.
 func (r *R) Verify(req http.Request) bool {
 	r.lastError = make([]string, 1)
-	response := req.PostFormValue("g-recaptcha-response")
+	response := req.FormValue("g-recaptcha-response")
 	client := &http.Client{Timeout: 20 * time.Second}
 	resp, err := client.PostForm(postUrl,
 		url.Values{"secret": {r.Secret}, "response": {response}})
