@@ -19,16 +19,19 @@ package recaptcha
 import (
 	"encoding/json"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
 // R type represents an object of Recaptcha and has public property Secret,
 // which is secret obtained from google recaptcha tool admin interface
 type R struct {
-	Secret    string
-	lastError []string
+	Secret             string
+	lastError          []string
+	TrustXForwardedFor bool
 }
 
 // Struct for parsing json in google's response
@@ -46,9 +49,11 @@ var postURL = "https://www.google.com/recaptcha/api/siteverify"
 func (r *R) Verify(req http.Request) bool {
 	r.lastError = make([]string, 1)
 	response := req.FormValue("g-recaptcha-response")
+	addr := r.findRemoteAddr(&req)
 	client := &http.Client{Timeout: 20 * time.Second}
+
 	resp, err := client.PostForm(postURL,
-		url.Values{"secret": {r.Secret}, "response": {response}})
+		url.Values{"secret": {r.Secret}, "response": {response}, "remoteip": {addr}})
 	if err != nil {
 		r.lastError = append(r.lastError, err.Error())
 		return false
@@ -74,4 +79,22 @@ func (r *R) Verify(req http.Request) bool {
 // LastError returns errors occurred in last re-captcha validation attempt
 func (r R) LastError() []string {
 	return r.lastError
+}
+
+// findRemoteAddr gets remote address
+func (r *R) findRemoteAddr(req *http.Request) string {
+	addr := ""
+
+	if r.TrustXForwardedFor {
+		addr = req.Header.Get("X-Forwarded-For")
+	}
+
+	if addr == "" {
+		addr, _, _ = net.SplitHostPort(req.RemoteAddr)
+	} else {
+		addrs := strings.Split(addr, ",")
+		addr = strings.TrimSpace(addrs[len(addrs)-1])
+	}
+
+	return addr
 }
