@@ -31,6 +31,7 @@ import (
 type R struct {
 	Secret             string
 	lastError          []string
+	UseRemoteIP        bool
 	TrustXForwardedFor bool
 }
 
@@ -49,11 +50,15 @@ var postURL = "https://www.google.com/recaptcha/api/siteverify"
 func (r *R) Verify(req http.Request) bool {
 	r.lastError = make([]string, 1)
 	response := req.FormValue("g-recaptcha-response")
-	addr := r.findRemoteAddr(&req)
-	client := &http.Client{Timeout: 20 * time.Second}
+	params := url.Values{"secret": {r.Secret}, "response": {response}}
 
-	resp, err := client.PostForm(postURL,
-		url.Values{"secret": {r.Secret}, "response": {response}, "remoteip": {addr}})
+	if r.UseRemoteIP {
+		addr := r.findRemoteAddr(&req)
+		params.Set("remoteip", addr)
+	}
+
+	client := &http.Client{Timeout: 20 * time.Second}
+	resp, err := client.PostForm(postURL, params)
 	if err != nil {
 		r.lastError = append(r.lastError, err.Error())
 		return false
