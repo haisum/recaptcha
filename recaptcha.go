@@ -29,9 +29,16 @@ import (
 // R type represents an object of Recaptcha and has public property Secret,
 // which is secret obtained from google recaptcha tool admin interface
 type R struct {
-	Secret             string
-	lastError          []string
-	UseRemoteIP        bool
+	Secret    string
+	lastError []string
+
+	// UseRemoteIP should be true if you want to send Client IP to
+	// recaptcha server.
+	UseRemoteIP bool
+
+	// TrustXForwardedFor should be true if your application runs behind a
+	// proxy you can trust.  This will only take effect if UseRemoteIP is
+	// true.
 	TrustXForwardedFor bool
 }
 
