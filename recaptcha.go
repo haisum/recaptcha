@@ -19,8 +19,10 @@ package recaptcha
 import (
 	"encoding/json"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -29,6 +31,15 @@ import (
 type R struct {
 	Secret    string
 	lastError []string
+
+	// UseRemoteIP should be true if you want to send Client IP to
+	// recaptcha server.
+	UseRemoteIP bool
+
+	// TrustXForwardedFor should be true if your application runs behind a
+	// proxy you can trust.  This will only take effect if UseRemoteIP is
+	// true.
+	TrustXForwardedFor bool
 }
 
 // Struct for parsing json in google's response
@@ -46,9 +57,15 @@ var postURL = "https://www.google.com/recaptcha/api/siteverify"
 func (r *R) Verify(req http.Request) bool {
 	r.lastError = make([]string, 1)
 	response := req.FormValue("g-recaptcha-response")
+	params := url.Values{"secret": {r.Secret}, "response": {response}}
+
+	if r.UseRemoteIP {
+		addr := r.findRemoteAddr(&req)
+		params.Set("remoteip", addr)
+	}
+
 	client := &http.Client{Timeout: 20 * time.Second}
-	resp, err := client.PostForm(postURL,
-		url.Values{"secret": {r.Secret}, "response": {response}})
+	resp, err := client.PostForm(postURL, params)
 	if err != nil {
 		r.lastError = append(r.lastError, err.Error())
 		return false
@@ -74,4 +91,22 @@ func (r *R) Verify(req http.Request) bool {
 // LastError returns errors occurred in last re-captcha validation attempt
 func (r R) LastError() []string {
 	return r.lastError
+}
+
+// findRemoteAddr gets remote address
+func (r *R) findRemoteAddr(req *http.Request) string {
+	addr := ""
+
+	if r.TrustXForwardedFor {
+		addr = req.Header.Get("X-Forwarded-For")
+	}
+
+	if addr == "" {
+		addr, _, _ = net.SplitHostPort(req.RemoteAddr)
+	} else {
+		addrs := strings.Split(addr, ",")
+		addr = strings.TrimSpace(addrs[len(addrs)-1])
+	}
+
+	return addr
 }
