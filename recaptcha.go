@@ -2,7 +2,7 @@
 //
 // Installation
 //
-//   go get github.com/haisum/recaptcha
+//   go get github.com/tech-angels/recaptcha
 //
 // Usage
 //
@@ -11,7 +11,7 @@
 //
 // Source code
 //
-// Available on github: http://github.com/haisum/recaptcha
+// Available on github: http://github.com/tech-angels/recaptcha
 //
 // Author: Haisum (haisumbhatti@gmail.com)
 package recaptcha

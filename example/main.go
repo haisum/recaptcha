@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/haisum/recaptcha"
+	"github.com/tech-angels/recaptcha"
 )
 
 func main() {
