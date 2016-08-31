@@ -2,9 +2,10 @@ package recaptcha
 
 import (
 	"fmt"
-	"github.com/haisum/recaptcha"
 	"log"
 	"net/http"
+
+	"github.com/tech-angels/recaptcha"
 )
 
 func ExampleR_Verify() {
@@ -31,7 +32,7 @@ func ExampleR_Verify() {
 		fmt.Fprintf(w, form)
 	})
 	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
-		isValid := re.Verify(*r)
+		isValid := re.Verify(r)
 		if isValid {
 			fmt.Fprintf(w, "Valid")
 		} else {

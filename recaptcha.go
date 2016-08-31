@@ -2,7 +2,7 @@
 //
 // Installation
 //
-//   go get github.com/haisum/recaptcha
+//   go get github.com/tech-angels/recaptcha
 //
 // Usage
 //
@@ -11,7 +11,7 @@
 //
 // Source code
 //
-// Available on github: http://github.com/haisum/recaptcha
+// Available on github: http://github.com/tech-angels/recaptcha
 //
 // Author: Haisum (haisumbhatti@gmail.com)
 package recaptcha
@@ -43,7 +43,7 @@ var postURL = "https://www.google.com/recaptcha/api/siteverify"
 // Verify method, verifies if current request have valid re-captcha response and returns true or false
 // This method also records any errors in validation.
 // These errors can be received by calling LastError() method.
-func (r *R) Verify(req http.Request) bool {
+func (r *R) Verify(req *http.Request) bool {
 	r.lastError = make([]string, 1)
 	response := req.FormValue("g-recaptcha-response")
 	client := &http.Client{Timeout: 20 * time.Second}
