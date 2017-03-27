@@ -44,8 +44,14 @@ var postURL = "https://www.google.com/recaptcha/api/siteverify"
 // This method also records any errors in validation.
 // These errors can be received by calling LastError() method.
 func (r *R) Verify(req http.Request) bool {
-	r.lastError = make([]string, 1)
 	response := req.FormValue("g-recaptcha-response")
+	return r.VerifyResponse(response)
+}
+
+// VerifyResponse is a method similar to `Verify`; but doesn't parse the form for you.  Useful if
+// you're receiving the data as a JSON object from a javascript app or similar.
+func (r *R) VerifyResponse(response string) bool {
+	r.lastError = make([]string, 1)
 	client := &http.Client{Timeout: 20 * time.Second}
 	resp, err := client.PostForm(postURL,
 		url.Values{"secret": {r.Secret}, "response": {response}})
